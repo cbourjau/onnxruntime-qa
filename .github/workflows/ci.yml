@@ -1,0 +1,45 @@
+name: CI
+on:
+  push:
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build-install-test:
+    name: build-install-test
+    timeout-minutes: 30
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os:
+          - ubuntu-latest
+          # - macos-latest
+          # - windows-latest
+        environment:
+          - default
+    steps:
+      - name: Checkout branch
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          fetch-depth: 0
+      - name: Checkout repo A
+        uses: actions/checkout@v4
+        with:
+          repository: microsoft/onnxruntime
+          ref: v1.24.1
+          path: onnxruntime-src
+      - name: Set up pixi
+        uses: prefix-dev/setup-pixi@a0af7a228712d6121d37aba47adf55c1332c9c2e
+        with:
+          environments: ${{ matrix.environment }}
+      - name: Build
+        run: pixi run -e ${{ matrix.environment }} debug-build
+      - name: Install
+        run: pixi run -e ${{ matrix.environment }} debug-install
+      - name: Test
+        run: pixi run -e ${{ matrix.environment }} pytest onnxruntime-src/onnxruntime/test/python/onnxruntime_test_python_mlops.py
+        

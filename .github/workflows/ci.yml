@@ -37,17 +37,8 @@ jobs:
         with:
           environments: build default lint
       - name: Build
-        run: |
-          cd onnxruntime-src
-          pwd
-          echo "----------"
-          ls
-          echo "============="
-          pixi run -e build build-debug
+        run: pixi run -e build build onnxruntime-src
       - name: Install
-        run:  |
-          cd onnxruntime-src
-          pixi run -e ${{ matrix.environment }} install-debug
+        run: pixi run -e ${{ matrix.environment }} install
       - name: Test
         run: pixi run -e ${{ matrix.environment }} pytest onnxruntime-src/onnxruntime/test/python/onnxruntime_test_python_mlops.py
-        

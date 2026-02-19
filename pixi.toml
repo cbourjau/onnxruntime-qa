@@ -42,13 +42,19 @@ lintrunner-run = "lintrunner --all-files"
 onnx = "*"
 pytest = ">=8.4.1,<9"
 
-[feature.build.tasks]
-build-debug = 'CMAKE_EXPORT_COMPILE_COMMANDS=1 python tools/ci_build/build.py --update --build_wheel --enable_pybind --build_dir build --config Debug --build --parallel --compile_no_warning_as_error --skip_pip_install'
-build-release = "python tools/ci_build/build.py --update --build_wheel --enable_pybind --build_dir build --config Release --build --parallel --cmake_extra_defines=CMAKE_CXX_STANDARD=17 --compile_no_warning_as_error --skip_pip_install"
+[feature.build.tasks.build]
+env = { CMAKE_EXPORT_COMPILE_COMMANDS = "1" }
+args = [
+  { "arg" = "src_dir", "default" = "." },
+  { "arg" = "config", "default" = "Debug" },
+]
+cmd = "python {{ src_dir }}/tools/ci_build/build.py --update --build_wheel --enable_pybind --build_dir build --config {{ config }} --build --parallel --compile_no_warning_as_error --skip_pip_install"
 
-[tasks]
-install-debug = { cmd = "python -m pip install build/Debug/dist/onnxruntime*.whl --no-deps --no-build-isolation"}
-install-release = { cmd = "python -m pip install build/Release/dist/onnxruntime*.whl --no-deps --no-build-isolation"}
+[tasks.install]
+args = [
+  { "arg" = "config", "default" = "Debug" },
+]
+cmd = "python -m pip install build/{{ config }}/dist/onnxruntime*.whl --no-deps --no-build-isolation"
 
 [environments]
 lint = ["lint"]

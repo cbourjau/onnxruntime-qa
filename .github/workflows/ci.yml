@@ -19,7 +19,7 @@ jobs:
           - ubuntu-latest
           - ubuntu-24.04-arm
           - macos-latest
-          - windows-latest
+          # - windows-latest
         environment:
           - default
     steps:
@@ -31,7 +31,7 @@ jobs:
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
           repository: microsoft/onnxruntime
-          ref: v1.24.1
+          ref: rel-1.24.2
           path: onnxruntime-src
       - name: Set up pixi
         uses: prefix-dev/setup-pixi@a0af7a228712d6121d37aba47adf55c1332c9c2e

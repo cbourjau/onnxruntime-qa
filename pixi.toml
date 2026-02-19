@@ -1,0 +1,56 @@
+[workspace]
+name = "onnxruntime"
+description = "onnxruntime"
+channels = ["conda-forge"]
+platforms = ["osx-arm64", "linux-64"]
+
+[dependencies]
+python = "*"
+setuptools = ">=75.6.0"
+numpy = "*"
+pip = "*"
+sympy = "*"
+pytest = ">=8.4.2,<10"
+
+[feature.build.dependencies]
+cmake = ">=3.30.2"
+make = "*"
+ninja = "*"
+numpy = "*"
+pip = "*"
+libdate = ">=3.0.1,<4"
+c-compiler = ">=1.8.0,<2"
+cxx-compiler = ">=1.8.0,<2"
+libprotobuf = "3.21.*"
+packaging = ">=24.1,<25"
+python = "*"
+setuptools = ">=75.6.0"
+
+[feature.lint.dependencies]
+# versions are based on requirements-lintrunner.txt
+clang-format = ">=19.1.5"
+ruff = ">=0.9.10"
+black = "==24.2.0"
+[feature.lint.pypi-dependencies]
+lintrunner = ">=0.12.5"
+lintrunner-adapters = ">=0.12.4"
+[feature.lint.tasks]
+lintrunner-init = "lintrunner init"
+lintrunner-run = "lintrunner --all-files"
+
+[feature.test.dependencies]
+onnx = "*"
+pytest = ">=8.4.1,<9"
+
+[feature.build.tasks]
+build-debug = 'CMAKE_EXPORT_COMPILE_COMMANDS=1 python tools/ci_build/build.py --update --build_wheel --enable_pybind --build_dir build --config Debug --build --parallel --compile_no_warning_as_error --skip_pip_install'
+build-release = "python tools/ci_build/build.py --update --build_wheel --enable_pybind --build_dir build --config Release --build --parallel --cmake_extra_defines=CMAKE_CXX_STANDARD=17 --compile_no_warning_as_error --skip_pip_install"
+
+[tasks]
+install-debug = { cmd = "python -m pip install build/Debug/dist/onnxruntime*.whl --no-deps --no-build-isolation"}
+install-release = { cmd = "python -m pip install build/Release/dist/onnxruntime*.whl --no-deps --no-build-isolation"}
+
+[environments]
+lint = ["lint"]
+build = {features=["build"], no-default-feature = true}
+test = ["test"]

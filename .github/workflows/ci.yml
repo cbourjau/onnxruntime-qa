@@ -37,7 +37,8 @@ jobs:
           # - macos-latest
           # - windows-latest
         environment:
-          - default
+          - "313"
+          - "314"
         ort-ref:
           - main
           - ${{ needs.latest-rel-branch.outputs.latest-rel }}
@@ -55,10 +56,10 @@ jobs:
           repository: microsoft/onnxruntime
           ref: ${{ matrix.ort-ref }}
           path: onnxruntime-src
-      # - name: Set up pixi
-      #   uses: prefix-dev/setup-pixi@a0af7a228712d6121d37aba47adf55c1332c9c2e
-      #   with:
-      #     environments: build default lint
+      - name: Set up pixi
+        uses: prefix-dev/setup-pixi@a0af7a228712d6121d37aba47adf55c1332c9c2e
+        with:
+          environments: build${{ matrix.environment }} run${{ matrix.environment }}
       # - name: Build
       #   run: pixi run -e build build onnxruntime-src
       # - name: Install

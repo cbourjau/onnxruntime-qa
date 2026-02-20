@@ -37,6 +37,8 @@ lintrunner-adapters = ">=0.12.4"
 lintrunner-init = "lintrunner init"
 lintrunner-run = "lintrunner --all-files"
 
+[feature.py313.dependencies]
+python-gil = "3.13.*"
 [feature.py314.dependencies]
 python-gil = "3.14.*"
 
@@ -56,5 +58,9 @@ cmd = "python -m pip install build/{{ config }}/dist/onnxruntime*.whl --no-deps 
 
 [environments]
 lint = ["lint"]
-default = ["test", "py314"]
-build = {features=["build", "py314"], no-default-feature = true}
+default = ["test", "py313"]
+
+run313 = ["test", "py313"]
+build313 = {features=["build", "py313"], no-default-feature = true}
+run314 = ["test", "py314"]
+build314 = {features=["build", "py314"], no-default-feature = true}

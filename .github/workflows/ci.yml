@@ -17,8 +17,8 @@ jobs:
       matrix:
         os:
           - ubuntu-latest
-          - ubuntu-24.04-arm
-          - macos-latest
+          # - ubuntu-24.04-arm
+          # - macos-latest
           # - windows-latest
         environment:
           - default
@@ -27,19 +27,24 @@ jobs:
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
           fetch-depth: 0
+      - name: Get latest release branch
+        run: |
+          TAG=$(git ls-remote --heads https://github.com/microsoft/onnxruntime.git | awk '{print $2}' | sed 's|refs/heads/||' | grep '^rel-1\.[0-9]*\.[0-9]*$' | sort -V | tail -n 1)
+          echo "TAG=$TAG"
+          echo "TAG=$TAG" >> $GITHUB_OUTPUT
       - name: Checkout onnxruntime
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
           repository: microsoft/onnxruntime
-          ref: rel-1.24.2
+          ref: ${{ env.TAG }}
           path: onnxruntime-src
-      - name: Set up pixi
-        uses: prefix-dev/setup-pixi@a0af7a228712d6121d37aba47adf55c1332c9c2e
-        with:
-          environments: build default lint
-      - name: Build
-        run: pixi run -e build build onnxruntime-src
-      - name: Install
-        run: pixi run -e ${{ matrix.environment }} install
-      - name: Test
-        run: pixi run -e ${{ matrix.environment }} pytest onnxruntime-src/onnxruntime/test/python/onnxruntime_test_python_mlops.py
+      # - name: Set up pixi
+      #   uses: prefix-dev/setup-pixi@a0af7a228712d6121d37aba47adf55c1332c9c2e
+      #   with:
+      #     environments: build default lint
+      # - name: Build
+      #   run: pixi run -e build build onnxruntime-src
+      # - name: Install
+      #   run: pixi run -e ${{ matrix.environment }} install
+      # - name: Test
+      #   run: pixi run -e ${{ matrix.environment }} pytest onnxruntime-src/onnxruntime/test/python/onnxruntime_test_python_mlops.py

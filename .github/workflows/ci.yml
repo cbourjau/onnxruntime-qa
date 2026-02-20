@@ -2,6 +2,8 @@ name: CI
 on:
   push:
   workflow_dispatch:
+   schedule:
+     - cron: "0 0 * * *"  # run daily at midnight
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}

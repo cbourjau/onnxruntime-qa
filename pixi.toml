@@ -1,0 +1,66 @@
+[workspace]
+name = "onnxruntime"
+description = "onnxruntime"
+channels = ["conda-forge"]
+platforms = ["osx-arm64", "linux-64", "linux-aarch64", "win-64"]
+
+[feature.test.dependencies]
+setuptools = ">=75.6.0"
+numpy = "*"
+pip = "*"
+sympy = "*"
+pytest = ">=8.4.2,<10"
+onnx = "*"
+
+[feature.build.dependencies]
+cmake = ">=3.30.2"
+make = "*"
+ninja = "*"
+numpy = "*"
+pip = "*"
+libdate = ">=3.0.1,<4"
+c-compiler = ">=1.8.0,<2"
+cxx-compiler = ">=1.8.0,<2"
+libprotobuf = "3.21.*"
+packaging = ">=24.1,<25"
+setuptools = ">=75.6.0"
+
+[feature.lint.dependencies]
+# versions are based on requirements-lintrunner.txt
+clang-format = ">=19.1.5"
+ruff = ">=0.9.10"
+black = "==24.2.0"
+[feature.lint.pypi-dependencies]
+lintrunner = ">=0.12.5"
+lintrunner-adapters = ">=0.12.4"
+[feature.lint.tasks]
+lintrunner-init = "lintrunner init"
+lintrunner-run = "lintrunner --all-files"
+
+[feature.py313.dependencies]
+python-gil = "3.13.*"
+[feature.py314.dependencies]
+python-gil = "3.14.*"
+
+[feature.build.tasks.build]
+env = { CMAKE_EXPORT_COMPILE_COMMANDS = "1" }
+args = [
+  { "arg" = "src_dir", "default" = "." },
+  { "arg" = "config", "default" = "Debug" },
+]
+cmd = "python {{ src_dir }}/tools/ci_build/build.py --update --build_wheel --enable_pybind --build_dir build --config {{ config }} --build --parallel --compile_no_warning_as_error --skip_pip_install"
+
+[tasks.install]
+args = [
+  { "arg" = "config", "default" = "Debug" },
+]
+cmd = "python -m pip install build/{{ config }}/dist/onnxruntime*.whl --no-deps --no-build-isolation"
+
+[environments]
+lint = ["lint"]
+default = ["test", "py313"]
+
+run313 = ["test", "py313"]
+build313 = {features=["build", "py313"], no-default-feature = true}
+run314 = ["test", "py314"]
+build314 = {features=["build", "py314"], no-default-feature = true}

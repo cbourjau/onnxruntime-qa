@@ -1,0 +1,65 @@
+name: CI
+on:
+  push:
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  latest-rel-branch:
+    timeout-minutes: 1
+    runs-on: ubuntu-latest
+    outputs:
+      latest-rel: ${{ steps.step1.outputs.tag }}
+    strategy:
+      fail-fast: false
+    steps:
+      - name: Get latest release branch
+        id: step1
+        run: |
+          TAG=$(git ls-remote --heads https://github.com/microsoft/onnxruntime.git | awk '{print $2}' | sed 's|refs/heads/||' | grep '^rel-1\.[0-9]*\.[0-9]*$' | sort -V | tail -n 1)
+          echo "tag=$TAG"
+          echo "tag=$TAG" >> $GITHUB_OUTPUT
+
+  build-install-test:
+    name: build-install-test
+    timeout-minutes: 120
+    runs-on: ${{ matrix.os }}
+    needs: latest-rel-branch
+    strategy:
+      fail-fast: false
+      matrix:
+        os:
+          - ubuntu-latest
+          - ubuntu-24.04-arm
+          - macos-latest
+          - windows-latest
+        py-version:
+          - "313"
+          - "314"
+        ort-ref:
+          - main
+          - ${{ needs.latest-rel-branch.outputs.latest-rel }}
+    steps:
+      - name: Checkout branch
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          fetch-depth: 0
+      - name: Checkout onnxruntime ${{ matrix.ort-ref }}
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          repository: microsoft/onnxruntime
+          ref: ${{ matrix.ort-ref }}
+          path: onnxruntime-src
+      - name: Set up pixi
+        uses: prefix-dev/setup-pixi@a0af7a228712d6121d37aba47adf55c1332c9c2e
+        with:
+          environment: build${{ matrix.py-version }} run${{ matrix.py-version }}
+      - name: Build
+        run: pixi run -e build${{ matrix.py-version }} build onnxruntime-src
+      - name: Install
+        run: pixi run -e run${{ matrix.py-version }} install
+      - name: Test
+        run: pixi run -e run${{ matrix.py-version }} pytest onnxruntime-src/onnxruntime/test/python/onnxruntime_test_python_mlops.py

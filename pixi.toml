@@ -50,6 +50,12 @@ args = [
 ]
 cmd = "python {{ src_dir }}/tools/ci_build/build.py --update --build_wheel --enable_pybind --build_dir build --config {{ config }} --build --parallel --compile_no_warning_as_error --skip_pip_install"
 
+[feature.build.tasks.ctest]
+args = [
+  { "arg" = "config", "default" = "Debug" },
+]
+cmd = "ctest --test-dir build/{{ config }}/"
+
 [tasks.install]
 args = [
   { "arg" = "config", "default" = "Debug" },

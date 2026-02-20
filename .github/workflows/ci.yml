@@ -34,15 +34,15 @@ jobs:
       fail-fast: false
       matrix:
         os:
-          - ubuntu-latest
-          - ubuntu-24.04-arm
-          - macos-latest
+          # - ubuntu-latest
+          # - ubuntu-24.04-arm
+          # - macos-latest
           - windows-latest
         py-version:
           - "313"
-          - "314"
+          # - "314"
         ort-ref:
-          - main
+          # - main
           - ${{ needs.latest-rel-branch.outputs.latest-rel }}
     steps:
       - name: Checkout branch
@@ -58,9 +58,17 @@ jobs:
       - name: Set up pixi
         uses: prefix-dev/setup-pixi@a0af7a228712d6121d37aba47adf55c1332c9c2e
         with:
-          environment: build${{ matrix.py-version }} run${{ matrix.py-version }}
+          environments: build${{ matrix.py-version }} run${{ matrix.py-version }}
       - name: Build
         run: pixi run -e build${{ matrix.py-version }} build onnxruntime-src
+      - name: ls
+        run: |
+          echo "-----------"
+          ls /build
+          echo "==============="
+          ls /build/Debug
+      - name: ctests
+        run: pixi run -e build${{ matrix.py-version }} ctest
       - name: Install
         run: pixi run -e run${{ matrix.py-version }} install
       - name: Test

@@ -33,10 +33,10 @@ jobs:
       matrix:
         os:
           - ubuntu-latest
-          # - ubuntu-24.04-arm
-          # - macos-latest
-          # - windows-latest
-        environment:
+          - ubuntu-24.04-arm
+          - macos-latest
+          - windows-latest
+        py-version:
           - "313"
           - "314"
         ort-ref:
@@ -59,10 +59,10 @@ jobs:
       - name: Set up pixi
         uses: prefix-dev/setup-pixi@a0af7a228712d6121d37aba47adf55c1332c9c2e
         with:
-          environments: build${{ matrix.environment }} run${{ matrix.environment }}
-      # - name: Build
-      #   run: pixi run -e build build onnxruntime-src
-      # - name: Install
-      #   run: pixi run -e ${{ matrix.environment }} install
-      # - name: Test
-      #   run: pixi run -e ${{ matrix.environment }} pytest onnxruntime-src/onnxruntime/test/python/onnxruntime_test_python_mlops.py
+          environment: build${{ matrix.py-version }} run${{ matrix.py-version }}
+      - name: Build
+        run: pixi run -e build${{ matrix.py-version }} build onnxruntime-src
+      - name: Install
+        run: pixi run -e run${{ matrix.py-version }} install
+      - name: Test
+        run: pixi run -e run${{ matrix.py-version }} pytest onnxruntime-src/onnxruntime/test/python/onnxruntime_test_python_mlops.py

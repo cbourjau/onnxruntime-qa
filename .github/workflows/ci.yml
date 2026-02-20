@@ -64,9 +64,14 @@ jobs:
       - name: ls
         run: |
           echo "-----------"
-          ls /build
+          ls build
           echo "==============="
-          ls /build/Debug
+          ls build/Debug
+          echo "==============="
+          ls build/Debug/x64
+          echo "==============="
+          ls build/Debug/lib
+        shell: bash
       - name: ctests
         run: pixi run -e build${{ matrix.py-version }} ctest
       - name: Install

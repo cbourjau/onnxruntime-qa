@@ -61,16 +61,8 @@ jobs:
           environments: build${{ matrix.py-version }} run${{ matrix.py-version }}
       - name: Build
         run: pixi run -e build${{ matrix.py-version }} build onnxruntime-src
-      - name: ls
-        run: |
-          echo "-----------"
-          ls build
-          echo "==============="
-          ls build/Debug
-          echo "==============="
-          ls build/Debug/x64
-          echo "==============="
-          ls build/Debug/lib
+      - name: ls -R
+        run: ls -R build
         shell: bash
       - name: ctests
         run: pixi run -e build${{ matrix.py-version }} ctest

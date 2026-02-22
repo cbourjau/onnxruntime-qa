@@ -54,7 +54,7 @@ cmd = "python {{ src_dir }}/tools/ci_build/build.py --update --build_wheel --ena
 args = [
   { "arg" = "config", "default" = "Debug" },
 ]
-cmd = "ctest -C {{ config }} --test-dir build/{{ config }}/"
+cmd = "ctest -V -C {{ config }} --test-dir build/{{ config }}/"
 
 [tasks.install]
 args = [

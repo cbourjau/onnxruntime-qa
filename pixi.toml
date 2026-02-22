@@ -11,6 +11,8 @@ pip = "*"
 sympy = "*"
 pytest = ">=8.4.2,<10"
 onnx = "*"
+parameterized = ">=0.9.0,<0.10"
+mpi4py = ">=4.1.1,<5"
 
 [feature.build.dependencies]
 cmake = ">=3.30.2"
@@ -48,7 +50,8 @@ args = [
   { "arg" = "src_dir", "default" = "." },
   { "arg" = "config", "default" = "Debug" },
 ]
-cmd = "python {{ src_dir }}/tools/ci_build/build.py --update --build_wheel --enable_pybind --build_dir build --config {{ config }} --build --parallel --compile_no_warning_as_error --skip_pip_install"
+# TODO: Windows appears to have memleaks (only check in debug builds)
+cmd = "python {{ src_dir }}/tools/ci_build/build.py --update --build_wheel --enable_pybind --build_dir build --config {{ config }} --build --parallel --compile_no_warning_as_error --skip_pip_install --disable_memleak_checker"
 
 [feature.build.tasks.ctest]
 args = [

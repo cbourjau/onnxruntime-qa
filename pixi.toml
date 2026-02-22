@@ -51,7 +51,7 @@ args = [
   { "arg" = "config", "default" = "Debug" },
 ]
 cmd = "python {{ src_dir }}/tools/ci_build/build.py --update --build_wheel --enable_pybind --build_dir build --config {{ config }} --build --parallel --compile_no_warning_as_error --skip_pip_install"
-[target.win-64.tasks.build]
+[target.win.tasks.build]
 # TODO: Windows appears to have memleaks (only check in debug builds)
 env = { CMAKE_EXPORT_COMPILE_COMMANDS = "1" }
 args = [
@@ -59,6 +59,7 @@ args = [
   { "arg" = "config", "default" = "Debug" },
 ]
 cmd = "python {{ src_dir }}/tools/ci_build/build.py --update --build_wheel --enable_pybind --build_dir build --config {{ config }} --build --parallel --compile_no_warning_as_error --skip_pip_install --disable_memleak_checker"
+
 
 [feature.build.tasks.ctest]
 args = [
@@ -71,7 +72,7 @@ args = [
   { "arg" = "config", "default" = "Debug" },
 ]
 cmd = "python -m pip install build/{{ config }}/dist/onnxruntime*.whl --no-deps --no-build-isolation"
-[target.win-64.tasks.install]
+[target.win.tasks.install]
 # Windows has the config twice in the patch for some reason
 args = [
   { "arg" = "config", "default" = "Debug" },

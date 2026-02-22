@@ -50,16 +50,7 @@ args = [
   { "arg" = "src_dir", "default" = "." },
   { "arg" = "config", "default" = "Debug" },
 ]
-cmd = "python {{ src_dir }}/tools/ci_build/build.py --update --build_wheel --enable_pybind --build_dir build --config {{ config }} --build --parallel --compile_no_warning_as_error --skip_pip_install"
-[target.win.tasks.build]
-# TODO: Windows appears to have memleaks (only check in debug builds)
-env = { CMAKE_EXPORT_COMPILE_COMMANDS = "1" }
-args = [
-  { "arg" = "src_dir", "default" = "." },
-  { "arg" = "config", "default" = "Debug" },
-]
-cmd = "python {{ src_dir }}/tools/ci_build/build.py --update --build_wheel --enable_pybind --build_dir build --config {{ config }} --build --parallel --compile_no_warning_as_error --skip_pip_install --disable_memleak_checker"
-
+cmd = 'python {{ src_dir }}/tools/ci_build/build.py --update --build_wheel --enable_pybind --build_dir build --config {{ config }} --build --parallel --compile_no_warning_as_error --skip_pip_install {% if pixi.is_win %} --disable_memleak_checker {% endif %}'
 
 [feature.build.tasks.ctest]
 args = [
@@ -71,13 +62,8 @@ cmd = "ctest -V -C {{ config }} --test-dir build/{{ config }}/"
 args = [
   { "arg" = "config", "default" = "Debug" },
 ]
-cmd = "python -m pip install build/{{ config }}/dist/onnxruntime*.whl --no-deps --no-build-isolation"
-[target.win.tasks.install]
-# Windows has the config twice in the patch for some reason
-args = [
-  { "arg" = "config", "default" = "Debug" },
-]
-cmd = "python -m pip install build/{{ config }}/{{ config }}/dist/onnxruntime*.whl --no-deps --no-build-isolation"
+# windows has config twice in the path
+cmd = 'python -m pip install build/{{ config }}/{% if pixi.is_win  %}{{ config }}/{% endif %}dist/onnxruntime*.whl --no-deps --no-build-isolation'
 
 [environments]
 lint = ["lint"]

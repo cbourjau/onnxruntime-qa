@@ -59,11 +59,40 @@ jobs:
         uses: prefix-dev/setup-pixi@a0af7a228712d6121d37aba47adf55c1332c9c2e
         with:
           environments: build${{ matrix.py-version }} run${{ matrix.py-version }}
+      - name: Check for pre-installed onnxruntime
+        shell: pwsh
+        run: |
+          # Check for onnxruntime.dll anywhere on the system
+          Write-Host "=== Searching for onnxruntime.dll ==="
+          Get-ChildItem -Path C:\ -Filter "onnxruntime.dll" -Recurse -ErrorAction SilentlyContinue | Select-Object FullName
+
+          # Check PATH directories
+          Write-Host "=== PATH directories ==="
+          $env:PATH -split ';' | Where-Object { $_ -ne '' }
       - name: Build
         run: pixi run -e build${{ matrix.py-version }} build onnxruntime-src Release
       - name: ctests
         run: pixi run -e build${{ matrix.py-version }} ctest Release
       - name: Install
         run: pixi run -e run${{ matrix.py-version }} install Release
+      - name: Check for pre-installed onnxruntime
+        shell: pwsh
+        run: |
+          # Check for onnxruntime.dll anywhere on the system
+          Write-Host "=== Searching for onnxruntime.dll ==="
+          Get-ChildItem -Path C:\ -Filter "onnxruntime.dll" -Recurse -ErrorAction SilentlyContinue | Select-Object FullName
+
+          # Check PATH directories
+          Write-Host "=== PATH directories ==="
+          $env:PATH -split ';' | Where-Object { $_ -ne '' }
+
+          # Check what Python will actually load
+          Write-Host "=== Testing DLL load ==="
+          pixi run -e run313 python -c "import ctypes; import os; os.add_dll_directory(r'.pixi\envs\run313\Lib\site-packages\onnxruntime\capi'); print(ctypes.WinDLL('onnxruntime.dll'))"
+      # - name: Test
+      #   run: pixi run -e run${{ matrix.py-version }} pytest onnxruntime-src/onnxruntime/test/python/onnxruntime_test_python_mlops.py
       - name: Test
-        run: pixi run -e run${{ matrix.py-version }} pytest onnxruntime-src/onnxruntime/test/python/onnxruntime_test_python_mlops.py
+        shell: bash
+        run: |
+          export PATH="$PWD/.pixi/envs/run313/Lib/site-packages/onnxruntime/capi:$PATH"
+          pixi run -e run313 pytest onnxruntime-src/onnxruntime/test/python/onnxruntime_test_python_mlops.py

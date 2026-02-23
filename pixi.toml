@@ -23,7 +23,7 @@ pip = "*"
 libdate = ">=3.0.1,<4"
 c-compiler = ">=1.8.0,<2"
 cxx-compiler = ">=1.8.0,<2"
-libprotobuf = "3.21.*"
+# libprotobuf = "3.21.*"
 packaging = ">=24.1,<25"
 setuptools = ">=75.6.0"
 
@@ -69,7 +69,7 @@ cmd = 'python -m pip install build/{{ config }}/{% if pixi.is_win  %}{{ config }
 lint = ["lint"]
 default = ["test", "py313"]
 
-run313 = ["test", "py313"]
-build313 = {features=["build", "py313"], no-default-feature = true}
-run314 = ["test", "py314"]
-build314 = {features=["build", "py314"], no-default-feature = true}
+run313 = ["build", "test", "py313"]
+build313 = ["build", "py313"]
+run314 = ["build", "test", "py314"]
+build314 = ["build", "py314"]

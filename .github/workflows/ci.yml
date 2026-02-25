@@ -39,8 +39,8 @@ jobs:
           - macos-latest
           - windows-latest
         py-version:
-          - "313"
-          # - "314"
+          - "311"
+          - "314"
         ort-ref:
           - main
           - ${{ needs.latest-rel-branch.outputs.latest-rel }}

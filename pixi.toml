@@ -39,6 +39,10 @@ lintrunner-adapters = ">=0.12.4"
 lintrunner-init = "lintrunner init"
 lintrunner-run = "lintrunner --all-files"
 
+[feature.py311.dependencies]
+python-gil = "3.11.*"
+[feature.py312.dependencies]
+python-gil = "3.12.*"
 [feature.py313.dependencies]
 python-gil = "3.13.*"
 [feature.py314.dependencies]
@@ -69,6 +73,10 @@ cmd = 'python -m pip install build/{{ config }}/{% if pixi.is_win  %}{{ config }
 lint = ["lint"]
 default = ["test", "py313"]
 
+run311 = ["build", "test", "py311"]
+build311 = ["build", "py311"]
+run312 = ["build", "test", "py312"]
+build312 = ["build", "py312"]
 run313 = ["build", "test", "py313"]
 build313 = ["build", "py313"]
 run314 = ["build", "test", "py314"]

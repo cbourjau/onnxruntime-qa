@@ -67,13 +67,13 @@ jobs:
         run: pixi run -e run${{ matrix.py-version }} install Release
       - name: Test Windows
         shell: bash
-        if: ${{ runner.os == "Windows" }}
+        if: runner.os == 'Windows'
         # Somehow the wrong onnxruntime.dll is picked up on Windows
         run: |
-          export PATH="$PWD/.pixi/envs/run{{ matrix.py-version }}/Lib/site-packages/onnxruntime/capi:$PATH"
-          pixi run -e run{{ matrix.py-version }} pytest onnxruntime-src/onnxruntime/test/python/onnxruntime_test_python_mlops.py
+          export PATH="$PWD/.pixi/envs/run${{ matrix.py-version }}/Lib/site-packages/onnxruntime/capi:$PATH"
+          pixi run -e run${{ matrix.py-version }} pytest onnxruntime-src/onnxruntime/test/python/onnxruntime_test_python_mlops.py
       - name: Test Unix
         shell: bash
-        if: ${{ runner.os != "Windows" }}
+        if: runner.os != 'Windows'
         run: |
-          pixi run -e run{{ matrix.py-version }} pytest onnxruntime-src/onnxruntime/test/python/onnxruntime_test_python_mlops.py          
+          pixi run -e run${{ matrix.py-version }} pytest onnxruntime-src/onnxruntime/test/python/onnxruntime_test_python_mlops.py          

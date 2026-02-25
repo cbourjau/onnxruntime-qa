@@ -11,6 +11,8 @@ pip = "*"
 sympy = "*"
 pytest = ">=8.4.2,<10"
 onnx = "*"
+parameterized = ">=0.9.0,<0.10"
+mpi4py = ">=4.1.1,<5"
 
 [feature.build.dependencies]
 cmake = ">=3.30.2"
@@ -21,7 +23,7 @@ pip = "*"
 libdate = ">=3.0.1,<4"
 c-compiler = ">=1.8.0,<2"
 cxx-compiler = ">=1.8.0,<2"
-libprotobuf = "3.21.*"
+# libprotobuf = "3.21.*"
 packaging = ">=24.1,<25"
 setuptools = ">=75.6.0"
 
@@ -37,6 +39,10 @@ lintrunner-adapters = ">=0.12.4"
 lintrunner-init = "lintrunner init"
 lintrunner-run = "lintrunner --all-files"
 
+[feature.py311.dependencies]
+python-gil = "3.11.*"
+[feature.py312.dependencies]
+python-gil = "3.12.*"
 [feature.py313.dependencies]
 python-gil = "3.13.*"
 [feature.py314.dependencies]
@@ -48,19 +54,30 @@ args = [
   { "arg" = "src_dir", "default" = "." },
   { "arg" = "config", "default" = "Debug" },
 ]
-cmd = "python {{ src_dir }}/tools/ci_build/build.py --update --build_wheel --enable_pybind --build_dir build --config {{ config }} --build --parallel --compile_no_warning_as_error --skip_pip_install"
+cmd = 'python {{ src_dir }}/tools/ci_build/build.py --update --build_wheel --enable_pybind --build_dir build --config {{ config }} --build --parallel --compile_no_warning_as_error --skip_pip_install {% if pixi.is_win %} --disable_memleak_checker {% endif %}'
+
+[feature.build.tasks.ctest]
+args = [
+  { "arg" = "config", "default" = "Debug" },
+]
+cmd = "ctest -V -C {{ config }} --test-dir build/{{ config }}/"
 
 [tasks.install]
 args = [
   { "arg" = "config", "default" = "Debug" },
 ]
-cmd = "python -m pip install build/{{ config }}/dist/onnxruntime*.whl --no-deps --no-build-isolation"
+# windows has config twice in the path
+cmd = 'python -m pip install build/{{ config }}/{% if pixi.is_win  %}{{ config }}/{% endif %}dist/onnxruntime*.whl --no-deps --no-build-isolation'
 
 [environments]
 lint = ["lint"]
 default = ["test", "py313"]
 
-run313 = ["test", "py313"]
-build313 = {features=["build", "py313"], no-default-feature = true}
-run314 = ["test", "py314"]
-build314 = {features=["build", "py314"], no-default-feature = true}
+run311 = ["build", "test", "py311"]
+build311 = ["build", "py311"]
+run312 = ["build", "test", "py312"]
+build312 = ["build", "py312"]
+run313 = ["build", "test", "py313"]
+build313 = ["build", "py313"]
+run314 = ["build", "test", "py314"]
+build314 = ["build", "py314"]

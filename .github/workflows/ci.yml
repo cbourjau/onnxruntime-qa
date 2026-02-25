@@ -39,7 +39,7 @@ jobs:
           - macos-latest
           - windows-latest
         py-version:
-          - "313"
+          - "311"
           - "314"
         ort-ref:
           - main
@@ -58,10 +58,22 @@ jobs:
       - name: Set up pixi
         uses: prefix-dev/setup-pixi@a0af7a228712d6121d37aba47adf55c1332c9c2e
         with:
-          environment: build${{ matrix.py-version }} run${{ matrix.py-version }}
+          environments: build${{ matrix.py-version }} run${{ matrix.py-version }}
       - name: Build
-        run: pixi run -e build${{ matrix.py-version }} build onnxruntime-src
+        run: pixi run -e build${{ matrix.py-version }} build onnxruntime-src Release
+      - name: ctests
+        run: pixi run -e build${{ matrix.py-version }} ctest Release
       - name: Install
-        run: pixi run -e run${{ matrix.py-version }} install
-      - name: Test
-        run: pixi run -e run${{ matrix.py-version }} pytest onnxruntime-src/onnxruntime/test/python/onnxruntime_test_python_mlops.py
+        run: pixi run -e run${{ matrix.py-version }} install Release
+      - name: Test Windows
+        shell: bash
+        if: runner.os == 'Windows'
+        # Somehow the wrong onnxruntime.dll is picked up on Windows
+        run: |
+          export PATH="$PWD/.pixi/envs/run${{ matrix.py-version }}/Lib/site-packages/onnxruntime/capi:$PATH"
+          pixi run -e run${{ matrix.py-version }} pytest onnxruntime-src/onnxruntime/test/python/onnxruntime_test_python_mlops.py
+      - name: Test Unix
+        shell: bash
+        if: runner.os != 'Windows'
+        run: |
+          pixi run -e run${{ matrix.py-version }} pytest onnxruntime-src/onnxruntime/test/python/onnxruntime_test_python_mlops.py          

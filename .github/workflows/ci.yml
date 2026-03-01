@@ -2,7 +2,7 @@ name: CI
 on:
   push:
   workflow_dispatch:
-   schedule:
+  schedule:
      - cron: "0 0 * * *"  # run daily at midnight
 
 concurrency:

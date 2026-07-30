@@ -26,6 +26,7 @@ cxx-compiler = ">=1.8.0,<2"
 # libprotobuf = "3.21.*"
 packaging = ">=24.1,<25"
 setuptools = ">=75.6.0"
+clang-tools = "*"
 
 [feature.lint.dependencies]
 # versions are based on requirements-lintrunner.txt
@@ -49,7 +50,7 @@ python-gil = "3.13.*"
 python-gil = "3.14.*"
 
 [feature.build.tasks.build]
-env = { CMAKE_EXPORT_COMPILE_COMMANDS = "1" }
+env = { CMAKE_EXPORT_COMPILE_COMMANDS = "1", CMAKE_CXX_STANDARD = "17" }
 args = [
   { "arg" = "src_dir", "default" = "." },
   { "arg" = "config", "default" = "Debug" },
@@ -67,7 +68,7 @@ args = [
   { "arg" = "config", "default" = "Debug" },
 ]
 # windows has config twice in the path
-cmd = 'python -m pip install build/{{ config }}/{% if pixi.is_win  %}{{ config }}/{% endif %}dist/onnxruntime*.whl --no-deps --no-build-isolation'
+cmd = 'python -m pip install build/{{ config }}/{% if pixi.is_win  %}{{ config }}/{% endif %}dist/onnxruntime*.whl --no-deps --no-build-isolation --force-reinstall'
 
 [environments]
 lint = ["lint"]

@@ -37,7 +37,7 @@ jobs:
           - ubuntu-latest
           - ubuntu-24.04-arm
           - macos-latest
-          - windows-latest
+          - windows-2022
         py-version:
           - "311"
           - "314"

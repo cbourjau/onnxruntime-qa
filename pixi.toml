@@ -55,7 +55,7 @@ args = [
   { "arg" = "src_dir", "default" = "." },
   { "arg" = "config", "default" = "Debug" },
 ]
-cmd = 'python {{ src_dir }}/tools/ci_build/build.py --update --build_wheel --enable_pybind --build_dir build --config {{ config }} --build --parallel --compile_no_warning_as_error --skip_pip_install {% if pixi.is_win %} --disable_memleak_checker {% endif %}'
+cmd = 'python {{ src_dir }}/tools/ci_build/build.py --update --build_wheel --enable_pybind --build_dir build --config {{ config }} --build --parallel --compile_no_warning_as_error --skip_pip_install {% if pixi.is_win %} --disable_memleak_checker {% endif %} --no_telemetry'
 
 [feature.build.tasks.ctest]
 args = [

@@ -77,4 +77,4 @@ jobs:
         shell: bash
         if: runner.os != 'Windows'
         run: |
-          pixi run -e run${{ matrix.py-version }} pytest onnxruntime-src/onnxruntime/test/python/onnxruntime_test_python_mlops.py          
+          pixi run -e run${{ matrix.py-version }} pytest onnxruntime-src/onnxruntime/test/python/onnxruntime_test_python_mlops.py
